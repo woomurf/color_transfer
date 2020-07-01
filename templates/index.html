@@ -1,0 +1,55 @@
+<HTML>
+    <head>
+    </head>
+    <body>
+        <div>
+            <div id = 'inputImage'>
+                <input type = 'file' id = 'source' placeholder="source image">
+                <input type = 'file' id = 'target' placeholder="target image">
+                <button id = "submit" type='submit'> 제출 </button>
+            </div>
+
+            <div id ='resultBox'>
+                <p id='errorbox'></p>
+                <img id='resultImage' src="" alt="">
+            </div>
+            <script>
+                document.getElementById("submit").onclick = () => {
+                    var formData = new FormData();
+                    var source = document.getElementById('source').files[0]
+                    var target = document.getElementById('target').files[0]
+                    
+                    formData.append('source', source)
+                    formData.append('target', target)
+    
+                    fetch(
+                        '/transfer',
+                        {
+                            method: 'POST',
+                            body: formData,
+                        }
+                    )
+                    .then(response => {
+                        if ( response.status == 200){
+                            return response 
+                        }
+                        else {
+                            throw Error("transfer error");
+                        }
+                    })
+                    .then(response => response.blob())
+                    .then(blob => URL.createObjectURL(blob))
+                    .then(imageURL => {
+                        document.getElementById("resultImage").src = imageURL;
+                    })
+                    .catch(e =>{
+                        document.getElementById("errorbox").innerHTML = e;
+                    })
+                }
+
+            </script>
+        </div>
+        
+    </body>
+</HTML>
+
